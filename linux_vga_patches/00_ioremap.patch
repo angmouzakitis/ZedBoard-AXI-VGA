@@ -1,0 +1,15 @@
+--- arch/arm/mm/ioremap.c.0	2016-04-17 23:47:06.115233291 +0300
++++ arch/arm/mm/ioremap.c	2016-04-17 23:49:29.640238694 +0300
+@@ -298,8 +298,10 @@
+ 	/*
+ 	 * Don't allow RAM to be mapped - this causes problems with ARMv6+
+ 	 */
+-	if (WARN_ON(pfn_valid(pfn)))
+-		return NULL;
++	/* angelos create a dirty workaround for vga remapping
++	 * if (WARN_ON(pfn_valid(pfn)))
++	 * 	return NULL;
++	 */
+ 
+ 	area = get_vm_area_caller(size, VM_IOREMAP, caller);
+  	if (!area)

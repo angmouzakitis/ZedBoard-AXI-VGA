@@ -1,0 +1,11 @@
+--- arch/arm/boot/dts/zynq-zed.dts.1	2016-04-17 22:08:58.999011643 +0300
++++ arch/arm/boot/dts/zynq-zed.dts	2016-04-17 22:09:13.894012204 +0300
+@@ -40,7 +40,7 @@
+ 	};
+ 
+ 	chosen {
+-		bootargs = "console=ttyPS0,115200 root=/dev/ram rw earlyprintk";
++		bootargs = "console=ttyPS0,115200 root=/dev/mmcblk0p2 rw earlyprintk rootwait";
+ 		linux,stdout-path = "/amba/serial@e0001000";
+ 	};
+ 

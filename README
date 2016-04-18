@@ -1,0 +1,44 @@
+A memory mapped VGA controller for ZedBoard.
+
+0. Pixel format
+1. How to build the bitstream
+2. Bare metal test
+3. Work on Linux
+
+0. Pixel format
+ Pixels are stored in DDR memory starting on 0x01000000. Each 32-bit word
+ stores 2 pixels. 
+ ----------------------------------------------------------------------------
+ | 31 - 28 | 27 - 24 | 23 - 20 | 19 - 16 | 15 - 12 | 11 - 8 | 7 - 4 | 3 - 0 |
+ | UNUSED  | RED_1   | GREEN_1 | BLUE_1  | UNUSED  | RED_0 |GREEN_0 | BLUE_0|
+ ----------------------------------------------------------------------------
+ bits with XXX_0 contain 4-bit color value for pixel (N) and XXX_1 for (N + 1)
+
+1. How to build the bitstream
+ Create a new Vivado project for ZedBoard, add vga.vhd to the project
+ sources and `Package IP' the current project.
+ Create a new project and include in IP Repositories the path of last project.
+ Create a block design with ZYNQ Processing System, Processor System Reset, an 
+ AXI interconnect and the VGA block. Customize ZYNQ PS; add S_AXI_ACP port, a 
+ PL Fabric Clock (FCLK_CLKx) of 102 MHz Actual Frequency, enable DDR and any 
+ other blocks you need. Connect the master port of VGA block to interconnect
+ and then to S_AXI_ACP of ZYNQPS. Make external VGA signals (r, g, b, hs, vs).
+ Wire everything else and auto-asign addresses for vga mapping on Adress Editor.
+ Add top_level_constrains.xdc file to constrains and generate the bitstream.
+
+2. Bare metal test
+ As bitstream is done, export hardware platform to SDK for C programming.
+ Set a pointer to 0x1000000 and handle pixels on your own.
+ Alternative - and faster - method is to program the bitstream to FPGA and 
+ test it with xmd. Open xmd, program the fpga with the bitstream and test
+ functionality with mwr commands.
+
+3. Work on Linux
+ After working test of bitstream bare-metal in order to make linux work with
+ this hardware component you have to patch some files. Patches are on top of 
+ linux kernel of Xilinx/xlnx 3.17 branch on github. Apply all patches from 
+ linux_vga_patches directory from top linux kernel directory(e.g /usr/src/linux)
+ Compile kernel, make uImage, a new dtb of arch/arm/boot/dts/zynq-zed.dts place
+ it proper and reboot. 
+ Note: simplefb is not the appropriete driver for this framebuffer because the
+ r5g6b5 format is not what the pixel format is (for now).

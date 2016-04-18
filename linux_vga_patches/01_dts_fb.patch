@@ -1,0 +1,32 @@
+--- arch/arm/boot/dts/zynq-zed.dts.0	2016-04-17 22:04:16.433001005 +0300
++++ arch/arm/boot/dts/zynq-zed.dts	2016-04-17 22:08:45.559011137 +0300
+@@ -29,10 +29,29 @@
+ 		reg = <0x0 0x20000000>;
+ 	};
+ 
++	reserved-memory {
++		#address-cells = <1>;
++		#size-cells = <1>;
++		ranges;
++		
++		framebuffer_reserved: framebuffer0@1000000 {
++		       reg = <0x1000000 (640 * 480 * 2)>;
++		};
++	};
++
+ 	chosen {
+ 		bootargs = "console=ttyPS0,115200 root=/dev/ram rw earlyprintk";
+ 		linux,stdout-path = "/amba/serial@e0001000";
+ 	};
++
++	framebuffer0: framebuffer@1000000 {
++	       compatible = "simple-framebuffer";
++	       reg = <0x1000000 (640 * 480 * 2)>;
++	       width = <640>;
++	       height = <480>;
++	       stride = <(640 * 2)>;
++	       format = "r5g6b5";
++	};
+ };
+ 
+ &qspi {
