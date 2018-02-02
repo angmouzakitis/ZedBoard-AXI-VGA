@@ -48,7 +48,7 @@ constant v_back_porch     : unsigned(10 downto 0) := v_sync_pulse    + 33 - 1;
 type pixel_buffer_type is array (0 to 63) of std_logic_vector(31 downto 0);
 signal pixel_buffer       : pixel_buffer_type;
 signal pixel_cnt          : unsigned(5  downto 0) := (others => '0');
-signal clk_divider        : unsigned(2  downto 0) := (others => '0');
+signal clk_divider        : unsigned(1  downto 0) := (others => '0');
 signal h_cnt              : unsigned(10 downto 0) := (others => '0');
 signal v_cnt              : unsigned(10 downto 0) := (others => '0');
 
@@ -85,7 +85,7 @@ begin
                     end if;
                 end if;
              when IDLE =>
-                if h_cnt mod 64 = 53 then
+                if h_cnt(5 downto 0) = 53 then
                     if h_cnt < h_active then
                         next_address <= next_address + 128;
                     elsif v_cnt > v_active then
@@ -103,14 +103,14 @@ begin
         clk_divider <= clk_divider + 1;
         if clk_divider = 4 - 1 then -- 102Mhz ACLK input clock required
             clk_divider <= (others => '0');
-            if h_cnt mod 2 = 0 then
-                r <= pixel_buffer(to_integer((h_cnt mod 64)/2))(11 downto 8);
-                g <= pixel_buffer(to_integer((h_cnt mod 64)/2))(7  downto 4);
-                b <= pixel_buffer(to_integer((h_cnt mod 64)/2))(3  downto 0);
+            if h_cnt(0) = '0' then
+                r <= pixel_buffer(to_integer("0" & (h_cnt(5 downto 1))))(11 downto 8);
+                g <= pixel_buffer(to_integer("0" & (h_cnt(5 downto 1))))(7  downto 4);
+                b <= pixel_buffer(to_integer("0" & (h_cnt(5 downto 1))))(3  downto 0);
             else
-                r <= pixel_buffer(to_integer(((h_cnt mod 64)-1)/2))(27 downto 24);
-                g <= pixel_buffer(to_integer(((h_cnt mod 64)-1)/2))(23 downto 20);
-                b <= pixel_buffer(to_integer(((h_cnt mod 64)-1)/2))(19 downto 16);
+                r <= pixel_buffer(to_integer((h_cnt(5 downto 0) - 1) / 2))(27 downto 24);
+                g <= pixel_buffer(to_integer((h_cnt(5 downto 0) - 1) / 2))(23 downto 20);
+                b <= pixel_buffer(to_integer((h_cnt(5 downto 0) - 1) / 2))(19 downto 16);
             end if;
             if v_cnt >= v_active or h_cnt >= h_active then 
                 r <= (others => '0');
