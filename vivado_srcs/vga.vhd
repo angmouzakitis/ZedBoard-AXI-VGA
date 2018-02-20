@@ -85,7 +85,7 @@ begin
                     end if;
                 end if;
              when IDLE =>
-                if h_cnt mod(5 downto 0) = 53 then
+                if h_cnt(5 downto 0) = 53 then
                     if h_cnt < h_active then
                         next_address <= next_address + 128;
                     elsif v_cnt > v_active then
@@ -104,13 +104,13 @@ begin
         if clk_divider = 4 - 1 then -- 102Mhz ACLK input clock required
             clk_divider <= (others => '0');
             if h_cnt(0) = '0' then
-                r <= pixel_buffer(to_integer("0" & (h_cnt(5 downto 1))(11 downto 8);
-                g <= pixel_buffer(to_integer("0" & (h_cnt(5 downto 1))(7  downto 4);
-                b <= pixel_buffer(to_integer("0" & (h_cnt(5 downto 1))(3  downto 0);
+                r <= pixel_buffer(to_integer("0" & (h_cnt(5 downto 1))))(11 downto 8);
+                g <= pixel_buffer(to_integer("0" & (h_cnt(5 downto 1))))(7  downto 4);
+                b <= pixel_buffer(to_integer("0" & (h_cnt(5 downto 1))))(3  downto 0);
             else
-                r <= pixel_buffer(to_integer("0" & ((h_cnt(5 downto 0)-1)(5 downto 1)))(27 downto 24);
-                g <= pixel_buffer(to_integer("0" & ((h_cnt(5 downto 0)-1)(5 downto 1)))(23 downto 20);
-                b <= pixel_buffer(to_integer("0" & ((h_cnt(5 downto 0)-1)(5 downto 1)))(19 downto 16);
+                r <= pixel_buffer(to_integer((h_cnt(5 downto 0) - 1) / 2))(27 downto 24);
+                g <= pixel_buffer(to_integer((h_cnt(5 downto 0) - 1) / 2))(23 downto 20);
+                b <= pixel_buffer(to_integer((h_cnt(5 downto 0) - 1) / 2))(19 downto 16);
             end if;
             if v_cnt >= v_active or h_cnt >= h_active then 
                 r <= (others => '0');
